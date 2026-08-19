@@ -2,5 +2,6 @@ fastapi
 uvicorn
 pydantic
 sqlalchemy
-google-genai
+google-genai           # unified SDK (current PyPI package)
+google-generativeai    # legacy alias — exposes same google.generativeai namespace
 python-dotenv
