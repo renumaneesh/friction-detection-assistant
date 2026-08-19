@@ -3,6 +3,12 @@ const cors = require('cors');
 const loggerMiddleware = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
 
+const eventsRoutes = require('./routes/events.routes');
+const frictionRoutes = require('./routes/friction.routes');
+const insightsRoutes = require('./routes/insights.routes');
+const automationRoutes = require('./routes/automation.routes');
+const apiDocs = require('../docs/openapi.json');
+
 const app = express();
 
 // Core Middlewares
@@ -19,6 +25,17 @@ app.get('/health', (req, res) => {
     service: 'friction-detection-backend',
   });
 });
+
+// API Documentation Endpoint
+app.get('/api/docs', (req, res) => {
+  res.json(apiDocs);
+});
+
+// Mount Feature API Routes
+app.use('/api', eventsRoutes);
+app.use('/api', frictionRoutes);
+app.use('/api', insightsRoutes);
+app.use('/api', automationRoutes);
 
 // 404 Handler for unhandled routes
 app.use((req, res, next) => {
