@@ -5,3 +5,5 @@ sqlalchemy
 google-genai           # unified SDK (current PyPI package)
 google-generativeai    # legacy alias — exposes same google.generativeai namespace
 python-dotenv
+faker
+psycopg2-binary
