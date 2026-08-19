@@ -1,0 +1,144 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Friction Detection Assistant API",
+    "description": "Cost-efficient cascading friction detection, revenue-at-risk scoring, systemic insights, and risk-tiered automation backend API.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "responses": {
+          "200": { "description": "Backend service healthy" }
+        }
+      }
+    },
+    "/api/events": {
+      "post": {
+        "summary": "Ingest customer telemetry event & execute cascade friction check",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "eventType"],
+                "properties": {
+                  "sessionId": { "type": "string", "example": "sess_101" },
+                  "userId": { "type": "string", "example": "user_55" },
+                  "eventType": { "type": "string", "example": "payment_attempt" },
+                  "timestamp": { "type": "string", "format": "date-time" },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {
+                      "cartValue": { "type": "number", "example": 149.99 },
+                      "stepName": { "type": "string", "example": "payment_info" },
+                      "paymentFailed": { "type": "boolean", "example": true },
+                      "paymentErrorCode": { "type": "string", "example": "DECLINED" },
+                      "clickCount": { "type": "number", "example": 6 },
+                      "dwellTimeMs": { "type": "number", "example": 140000 }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Event ingested and friction evaluated" }
+        }
+      }
+    },
+    "/api/friction/events": {
+      "get": {
+        "summary": "List friction events",
+        "parameters": [
+          { "name": "type", "in": "query", "schema": { "type": "string" } },
+          { "name": "sessionId", "in": "query", "schema": { "type": "string" } },
+          { "name": "detectedBy", "in": "query", "schema": { "type": "string", "enum": ["tier1", "tier3"] } },
+          { "name": "minConfidence", "in": "query", "schema": { "type": "number" } }
+        ],
+        "responses": {
+          "200": { "description": "List of detected friction events" }
+        }
+      }
+    },
+    "/api/friction/events/{id}": {
+      "get": {
+        "summary": "Get friction event details with explainability trail",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Friction event details" },
+          "404": { "description": "Friction event not found" }
+        }
+      }
+    },
+    "/api/metrics/cost-efficiency": {
+      "get": {
+        "summary": "Live demo cost efficiency stats (Tier 1 vs Tier 3 resolution %)",
+        "responses": {
+          "200": { "description": "Cost efficiency metrics" }
+        }
+      }
+    },
+    "/api/insights/systemic": {
+      "get": {
+        "summary": "Systemic friction insights across sessions",
+        "responses": {
+          "200": { "description": "Aggregated systemic insight breakdown" }
+        }
+      }
+    },
+    "/api/insights/revenue-at-risk": {
+      "get": {
+        "summary": "Revenue at risk calculations across friction patterns",
+        "responses": {
+          "200": { "description": "Revenue at risk analysis" }
+        }
+      }
+    },
+    "/api/automation/human-queue": {
+      "get": {
+        "summary": "Human-in-the-loop pending escalation queue",
+        "responses": {
+          "200": { "description": "Pending human escalation recovery actions" }
+        }
+      }
+    },
+    "/api/automation/{id}/resolve": {
+      "patch": {
+        "summary": "Human agent approve or reject pending recovery action",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["decision"],
+                "properties": {
+                  "decision": { "type": "string", "enum": ["approved", "rejected"] },
+                  "notes": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Resolved recovery action" }
+        }
+      }
+    }
+  }
+}
