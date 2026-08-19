@@ -197,11 +197,27 @@ router.get('/sessions/at-risk', async (req, res, next) => {
       const cartValue = dataLoader.deriveCartValue(s, product);
       const adapted   = dataLoader.adaptEventsForTier1(s.events);
       const t1        = detectFrictionTier1({ sessionId: s.id, cartValue }, adapted);
-      if (t1.detected) flaggedSessions.push(s);
+      if (t1.detected) flaggedSessions.push({ session: s, type: t1.type });
     }
 
-    // Cap at limit before calling Gemini — this is the speed fix
-    const toProcess = flaggedSessions.slice(0, limit);
+    // Stratify by friction type for the demo so we don't just get 15 of the same type
+    const byType = {};
+    for (const item of flaggedSessions) {
+      if (!byType[item.type]) byType[item.type] = [];
+      byType[item.type].push(item.session);
+    }
+
+    const toProcess = [];
+    let idx = 0;
+    while (toProcess.length < limit && toProcess.length < flaggedSessions.length) {
+      for (const type of Object.keys(byType)) {
+        if (byType[type].length > idx) {
+          toProcess.push(byType[type][idx]);
+          if (toProcess.length === limit) break;
+        }
+      }
+      idx++;
+    }
 
     // Run Gemini pipeline in batches of 5 (rate-limit friendly)
     const BATCH_SIZE = 5;

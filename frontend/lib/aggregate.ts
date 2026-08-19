@@ -9,8 +9,8 @@ export function aggregateRevenueAtRisk(sessions: AtRiskSession[]): RevenueAtRisk
     return { total_revenue_at_risk: 0, session_count: 0, top_friction_cause: "cart_abandoned" };
   }
 
-  // Sum risk_score as a proxy for revenue at risk (server already computed it)
-  const total_revenue_at_risk = sessions.reduce((sum, s) => sum + s.risk_score, 0);
+  // Compute revenue at risk from cart_value and risk_score percentage
+  const total_revenue_at_risk = sessions.reduce((sum, s) => sum + (s.cart_value * s.risk_score), 0);
 
   // Find the most frequent friction flag type across all sessions
   const counts: Record<string, number> = {};

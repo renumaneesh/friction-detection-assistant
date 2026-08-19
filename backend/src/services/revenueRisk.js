@@ -10,12 +10,12 @@ const DEFAULT_TYPE_METRICS = {
 
 /**
  * Calculate Revenue At Risk for a single friction event or session context
- * Formula: revenueAtRisk = cartValue * dropOffFrequency * (1 - historicalRecoveryRate)
+ * Formula: revenueAtRisk = cartValue * dropOffFrequency * (1 - historicalRecoveryRate) * confidence
  *
  * @param {Object} params - { cartValue, type, confidence, dropOffFrequency, recoveryRate }
  * @returns {Number} Rounded revenue at risk amount in USD
  */
-function calculateRevenueAtRisk({ cartValue = 0, type = 'default', dropOffFrequency, recoveryRate }) {
+function calculateRevenueAtRisk({ cartValue = 0, type = 'default', confidence = 1.0, dropOffFrequency, recoveryRate }) {
   if (!cartValue || cartValue <= 0) return 0;
 
   const defaultMetrics = DEFAULT_TYPE_METRICS[type] || DEFAULT_TYPE_METRICS.default;
@@ -23,7 +23,7 @@ function calculateRevenueAtRisk({ cartValue = 0, type = 'default', dropOffFreque
   const freq = typeof dropOffFrequency === 'number' ? dropOffFrequency : defaultMetrics.dropOffFrequency;
   const rate = typeof recoveryRate === 'number' ? recoveryRate : defaultMetrics.recoveryRate;
 
-  const risk = cartValue * freq * (1 - rate);
+  const risk = cartValue * freq * (1 - rate) * confidence;
   return Number(risk.toFixed(2));
 }
 

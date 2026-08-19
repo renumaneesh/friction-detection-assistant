@@ -10,7 +10,7 @@
 
 'use strict';
 
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenAI, Type } = require('@google/genai');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../../../.env') });
 
@@ -82,18 +82,18 @@ Return ONLY valid JSON matching the required schema. No extra text.
 // ---------------------------------------------------------------------------
 
 const _RESPONSE_SCHEMA = {
-  type: 'object',
+  type: Type.OBJECT,
   properties: {
     likely_cause: {
-      type: 'string',
+      type: Type.STRING,
       description: '1-2 plain-English sentences describing the likely underlying cause.',
     },
     recommended_action: {
-      type: 'string',
+      type: Type.STRING,
       enum: ['send_reminder_email', 'offer_discount', 'route_to_agent', 'send_faq_link'],
     },
     risk_tier: {
-      type: 'string',
+      type: Type.STRING,
       enum: ['low', 'high'],
     },
   },
@@ -151,8 +151,11 @@ async function diagnoseWithGemini(sessionData) {
     }
 
     return diagnosis;
-  } catch (_err) {
-    // Intentional broad catch — never throw (mirrors py `except Exception`)
+  } catch (err) {
+    // Log the actual error so we can diagnose failures during dev/demo
+    console.error('[GeminiClient] API call failed:', err?.message || err?.toString() || err);
+    if (err?.status) console.error('[GeminiClient] HTTP status:', err.status);
+    if (err?.errorDetails) console.error('[GeminiClient] Details:', JSON.stringify(err.errorDetails));
     return { ..._FALLBACK_RESPONSE };
   }
 }
