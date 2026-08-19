@@ -3,10 +3,12 @@ import { mockSessions } from "./mockData";
 
 // ─── Feature flag ────────────────────────────────────────────────────────────
 // Set to false to fetch from the live backend instead of using mock data.
-const USE_MOCK = true;
+const USE_MOCK = false;
 // ─────────────────────────────────────────────────────────────────────────────
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// Express backend runs on port 5000 (env.js default).
+// Override via NEXT_PUBLIC_API_URL in frontend/.env.local
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
 export async function getAtRiskSessions(): Promise<AtRiskSession[]> {
   if (USE_MOCK) {

@@ -7,6 +7,7 @@ const eventsRoutes = require('./routes/events.routes');
 const frictionRoutes = require('./routes/friction.routes');
 const insightsRoutes = require('./routes/insights.routes');
 const automationRoutes = require('./routes/automation.routes');
+const sessionsRoutes = require('./routes/sessions.routes');
 const apiDocs = require('../docs/openapi.json');
 
 const app = express();
@@ -36,6 +37,8 @@ app.use('/api', eventsRoutes);
 app.use('/api', frictionRoutes);
 app.use('/api', insightsRoutes);
 app.use('/api', automationRoutes);
+// New session pipeline routes (synthetic data -> tier1 -> Gemini)
+app.use('/', sessionsRoutes);
 
 // 404 Handler for unhandled routes
 app.use((req, res, next) => {
